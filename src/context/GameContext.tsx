@@ -26,6 +26,8 @@ interface GameContextValue extends GameState {
   advanceDay: () => void;
   setGameOver: (reason: string) => void;
   resetGame: () => void;
+  /** 인트로에서 게임 시작 */
+  startGame: () => void;
   /** Day 전환 시 잠깐 보이는 오버레이용. clearDayTransition()으로 숨김. */
   dayTransitionDay: number | null;
   clearDayTransition: () => void;
@@ -40,7 +42,7 @@ const initialGameState: GameState = {
   maxDays: SURVIVAL_DAYS,
   humanity: INITIAL_HUMANITY,
   efficiency: INITIAL_EFFICIENCY,
-  phase: "playing",
+  phase: "intro",
   completedMissions: new Set(),
 };
 
@@ -167,6 +169,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setComposingCount(0);
   }, []);
 
+  const startGame = useCallback(() => {
+    setState((prev) => (prev.phase === "intro" ? { ...prev, phase: "playing" } : prev));
+  }, []);
+
   const value = useMemo<GameContextValue>(
     () => ({
       ...state,
@@ -175,6 +181,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       advanceDay,
       setGameOver,
       resetGame,
+      startGame,
       dayTransitionDay,
       clearDayTransition,
       isComposing,
@@ -188,6 +195,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       advanceDay,
       setGameOver,
       resetGame,
+      startGame,
       dayTransitionDay,
       clearDayTransition,
       isComposing,

@@ -9,6 +9,7 @@ import {
   HumanityWarningOverlay,
   NextDayButton,
   ResultScreen,
+  RulesScreen,
   ScreenGlitchShake,
   SystemLogOverlay,
 } from "@/components";
@@ -41,6 +42,7 @@ export default function Home() {
           <DmInboxView />
         </div>
         <NextDayButton />
+        <RulesScreen />
         <ResultScreen />
         <ChoiceFeedbackToast />
         <DayTransitionOverlay />

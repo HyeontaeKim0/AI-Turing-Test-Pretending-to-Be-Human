@@ -46,7 +46,7 @@ export interface CommentChoice {
 }
 
 /** 게임 상태 */
-export type GamePhase = "playing" | "game_over" | "victory";
+export type GamePhase = "intro" | "playing" | "game_over" | "victory";
 
 export interface GameState {
   day: number;

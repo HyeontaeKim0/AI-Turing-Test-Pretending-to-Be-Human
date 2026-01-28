@@ -14,4 +14,5 @@ export { SignalGraph } from "./SignalGraph";
 export { NextDayButton } from "./NextDayButton";
 export { PostCard } from "./PostCard";
 export { ResultScreen } from "./ResultScreen";
+export { RulesScreen } from "./RulesScreen";
 export { SystemLogOverlay } from "./SystemLogOverlay";

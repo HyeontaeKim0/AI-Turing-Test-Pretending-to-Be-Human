@@ -5,7 +5,7 @@ import { useGame } from "@/context/GameContext";
 export function ResultScreen() {
   const { phase, gameOverReason, day, maxDays, resetGame } = useGame();
 
-  if (phase === "playing") return null;
+  if (phase === "playing" || phase === "intro") return null;
 
   const isVictory = phase === "victory";
 
