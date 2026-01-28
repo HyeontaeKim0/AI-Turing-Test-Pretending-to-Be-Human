@@ -21,12 +21,18 @@ interface GameContextValue extends GameState {
     humanityDelta: number,
     efficiencyDelta: number
   ) => void;
+  /** 미션 외 이벤트(예: DM, 타이핑 페널티)로 수치만 변경 */
+  applyDelta: (humanityDelta: number, efficiencyDelta: number) => void;
   advanceDay: () => void;
   setGameOver: (reason: string) => void;
   resetGame: () => void;
   /** Day 전환 시 잠깐 보이는 오버레이용. clearDayTransition()으로 숨김. */
   dayTransitionDay: number | null;
   clearDayTransition: () => void;
+  /** 댓글 작성 중 여부(멀티태스킹 DM 인터럽트 트리거용) */
+  isComposing: boolean;
+  beginComposing: () => void;
+  endComposing: () => void;
 }
 
 const initialGameState: GameState = {
@@ -50,6 +56,48 @@ const GameContext = createContext<GameContextValue | null>(null);
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<GameState>(initialGameState);
   const [dayTransitionDay, setDayTransitionDay] = useState<number | null>(null);
+  const [composingCount, setComposingCount] = useState(0);
+
+  const beginComposing = useCallback(() => {
+    setComposingCount((c) => c + 1);
+  }, []);
+  const endComposing = useCallback(() => {
+    setComposingCount((c) => Math.max(0, c - 1));
+  }, []);
+  const isComposing = composingCount > 0;
+
+  const applyDelta = useCallback((humanityDelta: number, efficiencyDelta: number) => {
+    setState((prev) => {
+      if (prev.phase !== "playing") return prev;
+      const newHumanity = Math.max(
+        0,
+        Math.min(100, prev.humanity + humanityDelta)
+      );
+      const newEfficiency = Math.max(
+        0,
+        Math.min(100, prev.efficiency + efficiencyDelta)
+      );
+
+      let phase: GamePhase = "playing";
+      let gameOverReason: string | undefined;
+
+      if (newHumanity <= 0) {
+        phase = "game_over";
+        gameOverReason = "인간성이 0이 되어 계정이 정지되었습니다.";
+      } else if (newEfficiency <= 0) {
+        phase = "game_over";
+        gameOverReason = "연산 효율 고갈로 시스템이 과열되어 종료되었습니다.";
+      }
+
+      return {
+        ...prev,
+        humanity: newHumanity,
+        efficiency: newEfficiency,
+        phase,
+        gameOverReason,
+      };
+    });
+  }, []);
 
   const completeMission = useCallback(
     (missionId: string, humanityDelta: number, efficiencyDelta: number) => {
@@ -116,26 +164,35 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const resetGame = useCallback(() => {
     setState(initialGameState);
     setDayTransitionDay(null);
+    setComposingCount(0);
   }, []);
 
   const value = useMemo<GameContextValue>(
     () => ({
       ...state,
       completeMission,
+      applyDelta,
       advanceDay,
       setGameOver,
       resetGame,
       dayTransitionDay,
       clearDayTransition,
+      isComposing,
+      beginComposing,
+      endComposing,
     }),
     [
       state,
       completeMission,
+      applyDelta,
       advanceDay,
       setGameOver,
       resetGame,
       dayTransitionDay,
       clearDayTransition,
+      isComposing,
+      beginComposing,
+      endComposing,
     ]
   );
 

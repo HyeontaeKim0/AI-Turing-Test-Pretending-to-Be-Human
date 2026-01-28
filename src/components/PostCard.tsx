@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { useFeedback } from "@/context/FeedbackContext";
 import type { CommentChoice, FeedPost, MissionDefinition } from "@/types/game";
-import { ChoiceButtons } from "./ChoiceButtons";
+import { MissionComposer } from "./MissionComposer";
 import { IconMore } from "./sns/TopBar";
 
 interface PostCardProps {
@@ -51,13 +51,20 @@ export function PostCard({ post, mission, showChoices }: PostCardProps) {
   const { showFeedback } = useFeedback();
   const completed = mission && completedMissions.has(mission.id);
 
-  const handleChoice = (choice: CommentChoice) => {
+  const handleSend = (args: {
+    chosenChoice: CommentChoice;
+    commentText: string;
+    timing: { elapsedMs: number; grade: string; humanityAdj: number; efficiencyAdj: number };
+  }) => {
     if (!mission) return;
-    const h = mission.humanityEffect(choice.id);
-    const e = mission.efficiencyEffect(choice.id);
-    setPlayerComment(choice.text);
-    completeMission(mission.id, h, e);
-    showFeedback(choice.hint, h, e);
+    const baseH = mission.humanityEffect(args.chosenChoice.id);
+    const baseE = mission.efficiencyEffect(args.chosenChoice.id);
+    const totalH = baseH + args.timing.humanityAdj;
+    const totalE = baseE + args.timing.efficiencyAdj;
+
+    setPlayerComment(args.commentText);
+    completeMission(mission.id, totalH, totalE);
+    showFeedback(args.chosenChoice.hint, totalH, totalE);
   };
 
   const avatarBg =
@@ -205,10 +212,7 @@ export function PostCard({ post, mission, showChoices }: PostCardProps) {
         {/* 댓글 입력 / 선택지 - "댓글 달기..." 플레이스홀더 아래에 선택지 */}
         {showChoices && mission ? (
           <div className="mt-2 rounded-lg bg-[var(--sns-bg)] p-2">
-            <p className="mb-2 text-xs text-[var(--sns-text-secondary)]">
-              댓글 선택 (해당 문장으로 답합니다)
-            </p>
-            <ChoiceButtons choices={mission.choices} onChoice={handleChoice} />
+            <MissionComposer mission={mission} onSend={handleSend} />
           </div>
         ) : (
           !playerComment && (

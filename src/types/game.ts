@@ -29,6 +29,8 @@ export interface MissionDefinition {
   id: string;
   post: Omit<FeedPost, "id" | "comments"> & { comments: Omit<Comment, "id">[] };
   choices: CommentChoice[];
+  /** 시스템 금지어(필터) 목록: 포함 시 전송 불가 */
+  bannedWords?: string[];
   /** 완료 시 인간성 변화 */
   humanityEffect: (choiceId: string) => number;
   /** 완료 시 연산효율 변화 */

@@ -29,7 +29,7 @@ export function NextDayButton() {
   return (
     <div
       className="fixed left-0 right-0 z-20 flex justify-center"
-      style={{ bottom: "calc(var(--sns-bottom-nav-height) + 12px)" }}
+      style={{ bottom: "12px" }}
     >
       <button
         type="button"

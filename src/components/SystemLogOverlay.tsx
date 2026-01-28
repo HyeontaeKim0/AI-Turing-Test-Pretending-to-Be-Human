@@ -57,7 +57,7 @@ export function SystemLogOverlay() {
 
   return (
     <div
-      className="pointer-events-none fixed bottom-[calc(var(--sns-bottom-nav-height)+0.5rem)] right-3 z-10 max-w-[200px] truncate rounded border border-stone-300/40 bg-white/70 px-2 py-1 font-mono text-[9px] text-stone-500/80 shadow-sm"
+      className="pointer-events-none fixed bottom-2 right-3 z-10 max-w-[200px] truncate rounded border border-stone-300/40 bg-white/70 px-2 py-1 font-mono text-[9px] text-stone-500/80 shadow-sm"
       aria-hidden
     >
       [{clientTime ?? "--:--:--"}] {logLine}

@@ -19,6 +19,7 @@ interface MissionInput {
   timestamp?: string;
   likes?: number;
   choices: ChoiceInput[];
+  bannedWords?: string[];
 }
 
 export function createMission(input: MissionInput): MissionDefinition {
@@ -54,6 +55,7 @@ export function createMission(input: MissionInput): MissionDefinition {
       comments: [],
     },
     choices: choicesFormatted,
+    bannedWords: input.bannedWords,
     humanityEffect: (choiceId: string) => humanityMap[choiceId] ?? 0,
     efficiencyEffect: (choiceId: string) => efficiencyMap[choiceId] ?? 0,
   };

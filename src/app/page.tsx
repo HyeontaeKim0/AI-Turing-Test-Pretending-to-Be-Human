@@ -4,15 +4,16 @@ import {
   ChoiceFeedbackToast,
   DangerExposeFlash,
   DayTransitionOverlay,
-  Feed,
+  DmInboxView,
   GameStatsBar,
   HumanityWarningOverlay,
   NextDayButton,
   ResultScreen,
+  ScreenGlitchShake,
   SystemLogOverlay,
 } from "@/components";
 import { useGame } from "@/context/GameContext";
-import { BottomNav, TopBar } from "@/components/sns";
+import { TopBar } from "@/components/sns";
 
 export default function Home() {
   const { phase } = useGame();
@@ -22,23 +23,31 @@ export default function Home() {
     : "var(--sns-top-bar-height)";
 
   return (
-    <main className="relative min-h-screen bg-[var(--sns-bg)]">
-      <TopBar />
-      <GameStatsBar />
-      <div
-        className="mx-auto min-h-screen max-w-[470px] pb-[var(--sns-bottom-nav-height)] transition-[padding-top] duration-200"
-        style={{ paddingTop: contentPt }}
-      >
-        <Feed />
-      </div>
-      <BottomNav />
-      <NextDayButton />
-      <ResultScreen />
-      <ChoiceFeedbackToast />
-      <DayTransitionOverlay />
-      <DangerExposeFlash />
-      <HumanityWarningOverlay />
-      <SystemLogOverlay />
-    </main>
+    <ScreenGlitchShake>
+      <main className="relative h-screen overflow-hidden bg-[var(--sns-bg)]">
+        <TopBar />
+        <GameStatsBar />
+        {/* 메인 = DM 인박스 (상·하단바 사이만 스크롤) */}
+        <div
+          className="mx-auto max-w-[470px] overflow-hidden transition-[top] duration-200 md:max-w-4xl"
+          style={{
+            position: "fixed",
+            top: contentPt,
+            bottom: 0,
+            left: 0,
+            right: 0,
+          }}
+        >
+          <DmInboxView />
+        </div>
+        <NextDayButton />
+        <ResultScreen />
+        <ChoiceFeedbackToast />
+        <DayTransitionOverlay />
+        <DangerExposeFlash />
+        <HumanityWarningOverlay />
+        <SystemLogOverlay />
+      </main>
+    </ScreenGlitchShake>
   );
 }
