@@ -1,0 +1,27 @@
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# build
+.next
+out
+build
+dist
+
+# misc
+.DS_Store
+*.pem
+
+# env
+.env
+.env*.local
+
+# lockfiles
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# generated
+next-env.d.ts
+*.tsbuildinfo
