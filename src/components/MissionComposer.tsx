@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import type { CommentChoice, MissionDefinition } from "@/types/game";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type TimingGrade = "too_fast" | "ok" | "too_slow";
 
@@ -39,11 +39,18 @@ export function MissionComposer({
   onSend: (args: {
     chosenChoice: CommentChoice;
     commentText: string;
-    timing: { elapsedMs: number; grade: TimingGrade; humanityAdj: number; efficiencyAdj: number };
+    timing: {
+      elapsedMs: number;
+      grade: TimingGrade;
+      humanityAdj: number;
+      efficiencyAdj: number;
+    };
   }) => void;
 }) {
   const { beginComposing, endComposing } = useGame();
-  const [selectedChoice, setSelectedChoice] = useState<CommentChoice | null>(null);
+  const [selectedChoice, setSelectedChoice] = useState<CommentChoice | null>(
+    null
+  );
   const [text, setText] = useState("");
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [now, setNow] = useState<number>(Date.now());
@@ -62,7 +69,10 @@ export function MissionComposer({
 
   const elapsedMs = startedAt ? Math.max(0, now - startedAt) : 0;
 
-  const bannedHit = useMemo(() => findBannedHit(text, mission.bannedWords), [text, mission.bannedWords]);
+  const bannedHit = useMemo(
+    () => findBannedHit(text, mission.bannedWords),
+    [text, mission.bannedWords]
+  );
 
   const timing = useMemo(() => {
     let grade: TimingGrade = "ok";
@@ -128,8 +138,12 @@ export function MissionComposer({
         <p className="text-xs font-medium text-[var(--sns-text-secondary)]">
           댓글 작성 (선택지 클릭 → 수정 가능)
         </p>
-        <div className={`text-[11px] font-semibold tabular-nums ${timingColor}`}>
-          {startedAt ? `${timingLabel} · ${msToSec(elapsedMs)}s` : "타이핑 시작 전"}
+        <div
+          className={`text-[11px] font-semibold tabular-nums ${timingColor}`}
+        >
+          {startedAt
+            ? `${timingLabel} · ${msToSec(elapsedMs)}s`
+            : "타이핑 시작 전"}
         </div>
       </div>
 
@@ -171,7 +185,8 @@ export function MissionComposer({
       )}
       {bannedHit && (
         <p className="mt-1 text-xs font-semibold text-red-600">
-          시스템 필터: 금지어 “{bannedHit}” 감지됨 (우회 표현으로 바꿔야 전송 가능)
+          시스템 필터: 금지어 “{bannedHit}” 감지됨 (우회 표현으로 바꿔야 전송
+          가능)
         </p>
       )}
 
@@ -188,4 +203,3 @@ export function MissionComposer({
     </div>
   );
 }
-

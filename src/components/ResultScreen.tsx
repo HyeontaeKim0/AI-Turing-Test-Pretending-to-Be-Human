@@ -18,7 +18,7 @@ export function ResultScreen() {
               생존 완료
             </p>
             <h2 className="mt-2 text-3xl font-black text-[var(--sns-primary)] animate-victory-glow">
-              30일 생존
+              {maxDays}일 생존
             </h2>
             <p className="mt-4 text-[var(--sns-text)]">
               정체를 들키지 않고 {maxDays}일을 버텼습니다.

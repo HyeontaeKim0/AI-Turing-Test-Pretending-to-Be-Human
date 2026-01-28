@@ -237,11 +237,21 @@ function buildMissions(): MissionDefinition[] {
 const ALL_MISSIONS = buildMissions();
 
 const N = ALL_MISSIONS.length;
-const OFFSETS = [0, 33, 67]; // 100개 중 겹치지 않게
 
-/** 날짜(day)를 시드로 해서 그날 노출할 미션 N개를 결정론적으로 선택 */
+/**
+ * 날짜(day)를 시드로 해서 그날 노출할 미션 count개를 결정론적으로 선택
+ * - count가 6 이상이어도 중복 없이 뽑히도록 설계
+ * - N(현재 100)과 서로소인 step을 써서 순환 중복을 방지
+ */
 export function getRandomMissions(day: number, count: number): MissionDefinition[] {
-  const indices = OFFSETS.slice(0, count).map((o) => (day + o) % N);
+  const safeCount = Math.max(0, Math.min(count, N));
+  const start = ((day * 17) % N + N) % N;
+  const step = 37; // gcd(37,100)=1 → 전체를 고르게 순회
+
+  const indices: number[] = [];
+  for (let i = 0; i < safeCount; i++) {
+    indices.push((start + i * step) % N);
+  }
   return indices.map((i) => ALL_MISSIONS[i]);
 }
 

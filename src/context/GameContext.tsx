@@ -46,11 +46,29 @@ const initialGameState: GameState = {
   completedMissions: new Set(),
 };
 
-/** "다음 날로" 할 때마다 연산 효율 회복. 후반으로 갈수록 회복량 감소 (쉽게 버티지 못하게) */
+/** "다음 날로" 할 때마다 연산 효율 회복. 밸런스: 안전 선택 위주로도 15일 버틸 수 있게 */
 function getEfficiencyRecoveryForDay(nextDay: number): number {
-  if (nextDay <= 14) return 15;
-  if (nextDay <= 24) return 12;
-  return 10;
+  // Day가 오를수록 회복량은 줄어듦 (후반 안정화 방지)
+  if (nextDay <= 8) return 18;
+  if (nextDay <= 15) return 14;
+  return 12;
+}
+
+/** 밸런스: E 감소 완화 (미션당 -15 수준 → 약 -10) */
+const BALANCE_EFFICIENCY_SCALE = 0.7;
+/** 밸런스: H 감소 완화 (잘못 선택 시 -25 수준 → 약 -15) */
+const BALANCE_HUMANITY_PENALTY_SCALE = 0.6;
+
+function scaleHumanityDelta(d: number): number {
+  // H는 정수만 사용 (UI/게임감 단순화)
+  return d >= 0 ? Math.round(d) : Math.round(d * BALANCE_HUMANITY_PENALTY_SCALE);
+}
+function scaleEfficiencyDelta(d: number): number {
+  return Math.round(d * BALANCE_EFFICIENCY_SCALE);
+}
+
+function clampGaugeInt(n: number): number {
+  return Math.max(0, Math.min(100, Math.round(n)));
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -71,14 +89,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const applyDelta = useCallback((humanityDelta: number, efficiencyDelta: number) => {
     setState((prev) => {
       if (prev.phase !== "playing") return prev;
-      const newHumanity = Math.max(
-        0,
-        Math.min(100, prev.humanity + humanityDelta)
-      );
-      const newEfficiency = Math.max(
-        0,
-        Math.min(100, prev.efficiency + efficiencyDelta)
-      );
+      const h = scaleHumanityDelta(humanityDelta);
+      const e = scaleEfficiencyDelta(efficiencyDelta);
+      const newHumanity = clampGaugeInt(prev.humanity + h);
+      const newEfficiency = clampGaugeInt(prev.efficiency + e);
 
       let phase: GamePhase = "playing";
       let gameOverReason: string | undefined;
@@ -105,8 +119,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     (missionId: string, humanityDelta: number, efficiencyDelta: number) => {
       setState((prev) => {
         if (prev.phase !== "playing") return prev;
-        const newHumanity = Math.max(0, Math.min(100, prev.humanity + humanityDelta));
-        const newEfficiency = Math.max(0, Math.min(100, prev.efficiency + efficiencyDelta));
+        const h = scaleHumanityDelta(humanityDelta);
+        const e = scaleEfficiencyDelta(efficiencyDelta);
+        const newHumanity = clampGaugeInt(prev.humanity + h);
+        const newEfficiency = clampGaugeInt(prev.efficiency + e);
         const newMissions = new Set(prev.completedMissions);
         newMissions.add(missionId);
 

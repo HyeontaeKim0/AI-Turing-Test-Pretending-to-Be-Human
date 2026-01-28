@@ -9,8 +9,8 @@ import type { CommentChoice, MissionDefinition } from "@/types/game";
 import { MissionComposer } from "./MissionComposer";
 
 function todayMissions(day: number): MissionDefinition[] {
-  if (day === 1) return [tutorialLunchMission];
-  return getRandomMissions(day, 3);
+  if (day === 1) return [tutorialLunchMission, ...getRandomMissions(day, 5)];
+  return getRandomMissions(day, 6);
 }
 
 export function DmInboxModal({

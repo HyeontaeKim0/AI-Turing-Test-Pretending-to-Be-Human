@@ -6,7 +6,8 @@ import { tutorialLunchMission } from "@/data/tutorialMission";
 
 /** Day1: 튜토리얼 1개 완료. Day2+: 오늘 미션 중 최소 2개 완료해야 "다음 날" 가능 */
 const MIN_MISSIONS_TO_ADVANCE_DAY1 = 1;
-const MIN_MISSIONS_TO_ADVANCE_DAY2_PLUS = 2;
+const MIN_MISSIONS_TO_ADVANCE_DAY2_PLUS = 4;
+const DAILY_MISSION_COUNT = 6;
 
 export function NextDayButton() {
   const { advanceDay, day, maxDays, phase, completedMissions } = useGame();
@@ -14,7 +15,7 @@ export function NextDayButton() {
   const todayMissionIds =
     day === 1
       ? [tutorialLunchMission.id]
-      : getRandomMissions(day, 3).map((m) => m.id);
+      : getRandomMissions(day, DAILY_MISSION_COUNT).map((m) => m.id);
   const completedCount = todayMissionIds.filter((id) =>
     completedMissions.has(id)
   ).length;
@@ -38,7 +39,9 @@ export function NextDayButton() {
       >
         {isLastDay
           ? "생존 완료 (승리)"
-          : `다음 날로 (Day ${day + 1})${day >= 2 ? ` · ${completedCount}/3` : ""}`}
+          : `다음 날로 (Day ${day + 1})${
+              day >= 2 ? ` · ${completedCount}/${DAILY_MISSION_COUNT}` : ""
+            }`}
       </button>
     </div>
   );

@@ -5,7 +5,7 @@ import { useGame } from "@/context/GameContext";
 const RULES = [
   {
     title: "목표",
-    text: "30일 동안 SNS에서 인간인 척하며 살아남으세요.",
+    text: "15일 동안 SNS에서 인간인 척하며 살아남으세요.",
   },
   {
     title: "미션",
@@ -21,14 +21,20 @@ const RULES = [
   },
   {
     title: "다음 날",
-    text: "Day 2부터는 오늘 미션 3개 중 2개를 완료하면 다음 날로 넘어갈 수 있습니다.",
+    text: "Day 2부터는 오늘 미션 6개 중 4개를 완료하면 다음 날로 넘어갈 수 있습니다.",
   },
 ];
 
 export function RulesScreen() {
-  const { phase, startGame } = useGame();
+  const { phase, startGame, maxDays } = useGame();
 
   if (phase !== "intro") return null;
+
+  const rulesWithDays = RULES.map((r) =>
+    r.title === "목표"
+      ? { ...r, text: `${maxDays}일 동안 SNS에서 인간인 척하며 살아남으세요.` }
+      : r
+  );
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-[var(--sns-bg)] p-4">
@@ -41,7 +47,7 @@ export function RulesScreen() {
         </p>
 
         <ul className="mt-6 space-y-4">
-          {RULES.map(({ title, text }) => (
+          {rulesWithDays.map(({ title, text }) => (
             <li key={title}>
               <p className="text-xs font-semibold uppercase tracking-wide text-[var(--sns-primary)]">
                 {title}

@@ -60,4 +60,4 @@ export interface GameState {
 
 export const INITIAL_HUMANITY = 80;
 export const INITIAL_EFFICIENCY = 100;
-export const SURVIVAL_DAYS = 30;
+export const SURVIVAL_DAYS = 15;

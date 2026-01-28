@@ -9,8 +9,9 @@ import type { CommentChoice, MissionDefinition } from "@/types/game";
 import { MissionComposer } from "./MissionComposer";
 
 function todayMissions(day: number): MissionDefinition[] {
-  if (day === 1) return [tutorialLunchMission];
-  return getRandomMissions(day, 3);
+  // Day1도 지루하지 않게 6개를 노출(튜토리얼 1 + 랜덤 5)
+  if (day === 1) return [tutorialLunchMission, ...getRandomMissions(day, 5)];
+  return getRandomMissions(day, 6);
 }
 
 /** 메인 화면용 DM 인박스 (모달 아님, 상·하단바 사이 영역에 배치) */
@@ -60,7 +61,7 @@ export function DmInboxView() {
       <aside className="hidden border-b border-[var(--sns-divider)] md:flex md:w-80 md:flex-col md:border-b-0 md:border-r">
         <div className="p-3">
           <p className="text-[11px] text-[var(--sns-text-secondary)]">
-            Day 2+는 <b>3개 중 2개</b> 답장 시 다음 날 진행 가능
+            Day 2+는 <b>6개 중 4개</b> 답장 시 다음 날 진행 가능
           </p>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
